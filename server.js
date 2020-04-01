@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const {names} = require('./names.json');
 
 app.use(express.static('public'));
 
