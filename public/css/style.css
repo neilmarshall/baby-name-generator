@@ -1,10 +1,14 @@
-.display-3 {
-    color: #8C8C94 !important;
-    font-family: 'Pacifico', cursive !important;
+body {
+    color: #8C8C94;
+    font-family: 'Pacifico', cursive;
 }
 
-.display-3 .lead {
-    font-family: 'Open Sans', sans-serif !important;
+.lead {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.font-xs {
+    font-size: x-small;
 }
 
 .img-placeholder {
@@ -12,7 +16,5 @@
     background-repeat: no-repeat;
     background-position: center;
     min-height: 550px;
-    color: #8C8C94;
-    font-family: 'Pacifico';
     font-size: larger;
 } 
