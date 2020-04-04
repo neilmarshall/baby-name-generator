@@ -24,7 +24,8 @@ app.post('/api/favouritenames', async (req, res) => {
     addFavouriteNames(
         req.body.preferredName,
         req.body.unpreferredName,
-        req.body.username);
+        req.body.username,
+        new Date());
     res.status(201).send();
 });
 

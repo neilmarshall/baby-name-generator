@@ -62,12 +62,12 @@ async function getFavouriteNames(username) {
     }
 }
 
-async function addFavouriteNames(preferredName, unpreferredName, username) {
+async function addFavouriteNames(preferredName, unpreferredName, username, date) {
     const client = new MongoClient(url, {useUnifiedTopology: true});
     try {
         await client.connect();
         await client.db().collection('favouriteNames').insertOne({
-            preferredName, unpreferredName, username
+            preferredName, unpreferredName, username, date
         });
     } catch (err) {
         console.log(err);
