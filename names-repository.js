@@ -1,61 +1,80 @@
-const fetch = require('node-fetch');
+const { MongoClient } = require('mongodb');
 
-async function getNames(username) {
-    // TODO: Read from MondoDB resource here
-    return JSON.stringify(
-        username === 'Sam'
-        ?  [
-             {name: "Arthur", total: 12},
-             {name: "Cillian", total: 11},
-             {name: "Vincent", total: 10},
-             {name: "Henry", total: 9},
-             {name: "Emmett", total: 8},
-             {name: "Jonathan", total: 7},
-             {name: "Arlo", total: 6},
-             {name: "Owen", total: 5},
-             {name: "Jamie", total: 4},
-             {name: "Warren", total: 3},
-             {name: "Elias", total: 2},
-             {name: "Emery", total: 1},
-             {name: "Darcy", total: 0},
-             {name: "Alaric", total: -1},
-             {name: "Richard", total: -2},
-             {name: "Fenton", total: -3},
-             {name: "Rufus", total: -4},
-             {name: "Ivor", total: -5},
-             {name: "Eli", total: -6},
-             {name: "Robin", total: -7},
-             {name: "Connor", total: -8},
-             {name: "Leon", total: -9},
-             {name: "Jude", total: -10},
-             {name: "Dacre", total: -11},
-             {name: "Ethan", total: -12},
-             {name: "Guy", total: -13}
-        ]
-        :  [
-             {name: "Emmett", total: 8},
-             {name: "Henry", total: 7},
-             {name: "Arlo", total: 6},
-             {name: "Jonathan", total: 5},
-             {name: "Jamie", total: 4},
-             {name: "Owen", total: 3},
-             {name: "Elias", total: 2},
-             {name: "Warren", total: 1},
-             {name: "Arthur", total: 0},
-        ]
-    );
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/babynames';
+
+async function getNames() {
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        return await client.db().collection('names').findOne();
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
 }
 
-async function addNames(preferredName, unpreferredName) {
-    // TODO: Write to MondoDB resource here
-    await fetch('http://localhost:3004/posts', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            preferredName: preferredName,
-            unpreferredName: unpreferredName})
-    });
+async function getFavouriteNames(username) {
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+
+        const preferredNames = await client.db()
+            .collection('favouriteNames')
+            .aggregate([
+                { '$match': { 'username': username } },
+                { '$group': { '_id': '$preferredName', 'count': { $sum: 1 } } }
+            ])
+            .toArray();
+
+        const unpreferredNames = await client.db()
+            .collection('favouriteNames')
+            .aggregate([
+                { '$match': { 'username': username } },
+                { '$group': { '_id': '$unpreferredName', 'count': { $sum: -1 } } }
+            ])
+            .toArray();
+
+        const nameCounts = {};
+        for (let [_, {_id, count}] of Object.entries(preferredNames)) {
+            nameCounts[_id] = count;
+        };
+        for (let [_, {_id, count}] of Object.entries(unpreferredNames)) {
+            if (nameCounts[_id]) {
+                nameCounts[_id] += count;
+            } else {
+                nameCounts[_id] = count;
+            }
+        };
+
+        const sortedNames = Object.keys(nameCounts)
+            .sort((n1, n2) =>
+                nameCounts[n1] === nameCounts[n2]
+                    ? n1 < n2 ? -1 : 1
+                    : nameCounts[n1] > nameCounts[n2] ? -1 : 1
+            );
+
+        return sortedNames.map(name => { return {name, total: nameCounts[name]}; });
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
 }
 
-module.exports = { getNames, addNames }
+async function addFavouriteNames(preferredName, unpreferredName, username) {
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        await client.db().collection('favouriteNames').insertOne({
+            preferredName, unpreferredName, username
+        });
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
+}
+
+module.exports = { getNames, getFavouriteNames, addFavouriteNames }
 
