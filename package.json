@@ -19,5 +19,8 @@
   "homepage": "https://github.com/neilmarshall/baby-name-generator#readme",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "node-fetch": "^2.6.0"
   }
 }

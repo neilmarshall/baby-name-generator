@@ -17,4 +17,9 @@ body {
     background-position: center;
     min-height: 550px;
     font-size: larger;
-} 
+}
+
+#name1, #name2 {
+  opacity: 1;
+  transition: 1s opacity;
+}
