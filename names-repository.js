@@ -6,7 +6,9 @@ async function getNames() {
     const client = new MongoClient(url, {useUnifiedTopology: true});
     try {
         await client.connect();
-        return await client.db().collection('names').findOne();
+        return await client.db()
+            .collection('names')
+            .findOne();
     } catch (err) {
         console.log(err);
     } finally {
@@ -66,9 +68,10 @@ async function addFavouriteNames(preferredName, unpreferredName, username, date)
     const client = new MongoClient(url, {useUnifiedTopology: true});
     try {
         await client.connect();
-        await client.db().collection('favouriteNames').insertOne({
-            preferredName, unpreferredName, username, date
-        });
+        return await client.db().collection('favouriteNames')
+            .insertOne({
+                preferredName, unpreferredName, username, date
+            });
     } catch (err) {
         console.log(err);
     } finally {
@@ -76,5 +79,36 @@ async function addFavouriteNames(preferredName, unpreferredName, username, date)
     }
 }
 
-module.exports = { getNames, getFavouriteNames, addFavouriteNames }
+async function addName(name) {
+    let { names } = await getNames();
+    names.push(name);
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        return await client.db()
+            .collection('names')
+            .findOneAndReplace({}, {names: names}, {returnOriginal: false});
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
+}
+
+async function deleteName(name) {
+    let { names } = await getNames();
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        await client.db()
+            .collection('names')
+            .findOneAndReplace({}, {names: names.filter(n => n !== name)});
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
+}
+
+module.exports = { addFavouriteNames, addName, deleteName, getFavouriteNames, getNames }
 
