@@ -18,8 +18,15 @@
   },
   "homepage": "https://github.com/neilmarshall/baby-name-generator#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-ensure-login": "^0.1.1",
+    "connect-flash": "^0.1.1",
     "express": "^4.17.1",
-    "mongodb": "^3.5.5"
+    "express-handlebars": "^4.0.3",
+    "express-session": "^1.17.0",
+    "mongodb": "^3.5.5",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
     "node-fetch": "^2.6.0"

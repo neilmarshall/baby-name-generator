@@ -1,13 +1,15 @@
-const { MongoClient } = require('mongodb');
-
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/babynames';
+const { MongoClient, ObjectId } = require('mongodb');
+const url = require('./config.js').URL;
+const namesCollection = 'names';
+const favouriteNamesCollection = 'favouriteNames';
+const usersCollection = 'users';
 
 async function getNames() {
     const client = new MongoClient(url, {useUnifiedTopology: true});
     try {
         await client.connect();
         return await client.db()
-            .collection('names')
+            .collection(namesCollection)
             .findOne();
     } catch (err) {
         console.log(err);
@@ -22,7 +24,7 @@ async function getFavouriteNames(username) {
         await client.connect();
 
         const preferredNames = await client.db()
-            .collection('favouriteNames')
+            .collection(favouriteNamesCollection)
             .aggregate([
                 { '$match': { 'username': username } },
                 { '$group': { '_id': '$preferredName', 'count': { $sum: 1 } } }
@@ -30,7 +32,7 @@ async function getFavouriteNames(username) {
             .toArray();
 
         const unpreferredNames = await client.db()
-            .collection('favouriteNames')
+            .collection(favouriteNamesCollection)
             .aggregate([
                 { '$match': { 'username': username } },
                 { '$group': { '_id': '$unpreferredName', 'count': { $sum: -1 } } }
@@ -68,7 +70,8 @@ async function addFavouriteNames(preferredName, unpreferredName, username, date)
     const client = new MongoClient(url, {useUnifiedTopology: true});
     try {
         await client.connect();
-        return await client.db().collection('favouriteNames')
+        return await client.db()
+            .collection(favouriteNamesCollection)
             .insertOne({
                 preferredName, unpreferredName, username, date
             });
@@ -81,12 +84,13 @@ async function addFavouriteNames(preferredName, unpreferredName, username, date)
 
 async function addName(name) {
     let { names } = await getNames();
-    names.push(name);
+    if (!names.includes(name))
+        names.push(name);
     const client = new MongoClient(url, {useUnifiedTopology: true});
     try {
         await client.connect();
         return await client.db()
-            .collection('names')
+            .collection(namesCollection)
             .findOneAndReplace({}, {names: names}, {returnOriginal: false});
     } catch (err) {
         console.log(err);
@@ -101,7 +105,7 @@ async function deleteName(name) {
     try {
         await client.connect();
         await client.db()
-            .collection('names')
+            .collection(namesCollection)
             .findOneAndReplace({}, {names: names.filter(n => n !== name)});
     } catch (err) {
         console.log(err);
@@ -110,5 +114,58 @@ async function deleteName(name) {
     }
 }
 
-module.exports = { addFavouriteNames, addName, deleteName, getFavouriteNames, getNames }
+async function getUser(username) {
+    if (!username) return null;
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        return await client.db()
+            .collection(usersCollection)
+            .findOne({username: username});
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
+}
+
+async function getUserById(id) {
+    if (!id) return null;
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        return await client.db()
+            .collection(usersCollection)
+            .findOne({_id: ObjectId(id)});
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
+}
+
+async function addUser(username, password) {
+    const client = new MongoClient(url, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        return await client.db()
+            .collection(usersCollection)
+            .insertOne({username, password});
+    } catch (err) {
+        console.log(err);
+    } finally {
+        client.close();
+    }
+}
+
+module.exports = {
+    addFavouriteNames,
+    addName,
+    addUser,
+    deleteName,
+    getFavouriteNames,
+    getNames,
+    getUser,
+    getUserById
+}
 

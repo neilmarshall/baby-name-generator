@@ -7,6 +7,10 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
+form {
+    font-family: 'Open Sans', sans-serif;
+}
+
 .font-xs {
     font-size: x-small;
 }
