@@ -1,17 +1,34 @@
-<form method="POST">
-  <div class="form-group">
-    <label for="usernameInput">Username</label>
-    <input type="text" class="form-control" name="username" id="usernameInput" placeholder="Username">
-    {{#if errors.incorrectUsername}}
-        <span class="text-danger">Incorrect Username</span>
-    {{/if}}
+<div class="modal fade" id="loginModal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalLabel">Login</h5>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+          <div class="form-group">
+            <label for="usernameInput">Username</label>
+            <input type="text" class="form-control" name="username" id="usernameInput" placeholder="Username">
+            {{#if errors.message}}
+                <span class="text-danger">{{errors.message}}</span>
+            {{/if}}
+          </div>
+          <div class="form-group">
+            <label for="passwordInput">Password</label>
+            <input type="password" class="form-control" name="password" id="passwordInput" placeholder="Password">
+          </div>
+            {{#if errors.message}}
+                <span class="text-danger">{{errors.message}}<br /></span>
+            {{/if}}
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+      </div>
+    </div>
   </div>
-  <div class="form-group">
-    <label for="passwordInput">Password</label>
-    <input type="password" class="form-control" name="password" id="passwordInput" placeholder="Password">
-  </div>
-    {{#if errors.incorrectPassword}}
-        <span class="text-danger">Incorrect Password</span>
-    {{/if}}
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        $('#loginModal').modal();
+    });
+</script>

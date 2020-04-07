@@ -1,22 +1,53 @@
 <header class="display-3 text-center">
-    Sam & Neil
-    <span class="lead">Due 24th June 2020</span>
+    <div class="row">
+        <div class="col-8">
+            Sam & Neil
+
+            <span class="lead">Due 24th June 2020</span>
+        </div>
+
+        <div class="col-4">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle"
+                        type="button" id="dropdownMenu" data-toggle="dropdown">
+                    Menu
+                </button>
+                <div class="dropdown-menu">
+                    <button class="dropdown-item" type="button" id="addNameButton">Add a name</button>
+                    <button class="dropdown-item" type="button" id="deleteNameButton">Delete a name</button>
+                    {{#if isAdmin}}
+                        <button class="dropdown-item" type="button" id="addUserButton">Add a user</button>
+                    {{/if}}
+                    <form method="GET" action="/logout">
+                        <button class="dropdown-item" type="submit">Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <hr>
 </header>
 
 <div class="row container">
+    <div class="col-2">
+        <table id="results-table-1"></table>
+    </div>
+    <div class="col-2">
+        <table id="results-table-2"></table>
+    </div>
     <div class="col-8">
         <div class="img-placeholder">
             <div class="row">
                 <div class="col-4 offset-1 mt-4">
                     <div class="row">
-                        <div class="col-4 text-center" id="name1"></div>
+                        <div class="col-4 text-center text-shadow" id="name1"></div>
                     </div>
                     <div class="row font-xs">
-                        <div class="col-4 offset-4 text-center"> or </div>
+                        <div class="col-4 offset-4 text-center text-shadow"> or </div>
                     </div>
                     <div class="row">
-                        <div class="col-4 offset-8 text-center" id="name2"></div>
+                        <div class="col-4 offset-8 text-center text-shadow" id="name2"></div>
                     </div>
 
                     <div class="row col-12 lead font-xs font-italic">Click on your favourite name</div>
@@ -24,11 +55,90 @@
             </div>
         </div>
     </div>
-    <div class="col-2">
-        <table id="results-table-1"></table>
+
+    <div class="modal fade" id="addNameModal" tabindex="-1" role="dialog" aria-labelledby="addNameModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addNameModalLabel">Add a name</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="mr-2">
+              <div class="form-group row">
+                <label for="addNameModalId" class="col-sm-3 col-form-label">Name</label>
+                <input type="text" class="form-control col-sm-9" name="name" id="addNameModalId">
+              </div>
+              <button type="submit" id="addNameModalButton" class="btn btn-secondary">Add name</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="col-2">
-        <table id="results-table-2"></table>
+
+    <div class="modal fade" id="deleteNameModal" tabindex="-1" role="dialog" aria-labelledby="deleteNameModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteNameModalLabel">Delete names</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <div id="deleteNameModalBody"></div>
+              <button type="submit" id="deleteNameModalButton" class="btn btn-secondary">
+                Delete selected name(s)
+              </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addUserModalLabel">Add a user</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form class="mr-2">
+              <div class="form-group row">
+                <label for="addUsernameModalId" class="col-sm-5 col-form-label">Username</label>
+                <input type="text" class="form-control col-sm-7" name="username" id="addUsernameModalId">
+              </div>
+              <div class="form-group row">
+                <label for="addPasswordModalId" class="col-sm-5 col-form-label">Password</label>
+                <input type="password" class="form-control col-sm-7" name="password" id="addPasswordModalId">
+              </div>
+              <fieldset class="form-group">
+                <div class="row">
+                  <legend class="col-form-label col-sm-3 pt-0">Role</legend>
+                  <div class="col-sm-9">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="roleRadios" id="roleRadios1" value="user" checked>
+                      <label class="form-check-label" for="roleRadios1">
+                        User
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="roleRadios" id="roleRadios2" value="admin">
+                      <label class="form-check-label" for="roleRadios2">
+                        Admin
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+              <button type="submit" id="addUserModalButton" class="btn btn-secondary">Add user</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="js/script.js"></script>

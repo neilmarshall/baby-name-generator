@@ -29,11 +29,11 @@ passport.use(new LocalStrategy(
         try {
             const user = await repository.getUser(username);
             if (!username || !user)
-                return done(null, false, {message: 'incorrect username'});
+                return done(null, false, {message: 'Incorrect username or password'});
 
             const passwordMatches = await bcrypt.compare(password, user.password);
             if (!password || !passwordMatches)
-                return done(null, false, { message: 'incorrect password' });
+                return done(null, false, { message: 'Incorrect username or password' });
 
             done(null, user);
         } catch (err) {
@@ -48,8 +48,7 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(async function(id, done) {
     const user = await repository.getUserById(id);
-    // TODO - bring through user role
-    done(null, {id: user._id, username: user.username});
+    done(null, {id: user._id, username: user.username, role: user.role});
 });
 
 
@@ -75,18 +74,18 @@ app.get('/', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
 
     // TODO - do something with the req.user object!!!
     console.log(req.user);
-    res.render('index');
+    res.render('index', {isAdmin: req.user.role === config.userRoles.ADMIN});
 });
 
 app.get('/login', (req, res) => {
-    // TODO - make this a modal pop-up window
-    const errors = {incorrectUsername: false, incorrectPassword: false};
     const errorMsgs = req.flash('error');
-    if (errorMsgs && errorMsgs[0] === 'incorrect username')
-        errors.incorrectUsername = true;
-    if (errorMsgs && errorMsgs[0] === 'incorrect password')
-        errors.incorrectPassword = true;
+    const errors = {message: errorMsgs && errorMsgs[0] ? errorMsgs[0] : null};
     res.render('login', {errors});
+});
+
+app.get('/logout', connectEnsureLogin.ensureLoggedIn(), function(req, res){
+    req.logout();
+    res.redirect('/');
 });
 
 app.get('/api/names', loggedInOr401, async (req, res) => {
@@ -106,7 +105,6 @@ app.post('/login',
 );
 
 app.post('/api/names/:name', loggedInOr401, async (req, res) => {
-    // TODO - make this a modal pop-up window
     const obj = await repository.addName(req.params.name);
     res.status(201).send(obj);
 });
@@ -121,17 +119,18 @@ app.post('/api/favouritenames', loggedInOr401, async (req, res) => {
 });
 
 app.post('/api/users', loggedInOr401, async (req, res) => {
-    // TODO - make this a modal pop-up window - restrict by user role
+    if (req.user.role !== config.userRoles.ADMIN)
+        return res.status(401).send();
+
     bcrypt.hash(req.body.password, 10)
-        .then(hash => repository.addUser(req.body.username, hash))
-        .then(_ => res.status(201).send())
+        .then(hash => repository.addUser(req.body.username, hash, req.body.role === config.userRoles.ADMIN))
+        .then(userCreated => userCreated ? res.status(201).send() : res.status(409).send())
         .catch(err => console.log(err));
 });
 
 
 // DELETE
 app.delete('/api/names/:name', loggedInOr401, async (req, res) => {
-    // TODO - make this a modal pop-up window
     await repository.deleteName(req.params.name);
     res.status(204).send();
 });

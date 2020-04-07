@@ -1,11 +1,11 @@
 const { MongoClient, ObjectId } = require('mongodb');
-const url = require('./config.js').URL;
+const config = require('./config.js');
 const namesCollection = 'names';
 const favouriteNamesCollection = 'favouriteNames';
 const usersCollection = 'users';
 
 async function getNames() {
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
         return await client.db()
@@ -19,7 +19,7 @@ async function getNames() {
 }
 
 async function getFavouriteNames(username) {
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
 
@@ -67,7 +67,7 @@ async function getFavouriteNames(username) {
 }
 
 async function addFavouriteNames(preferredName, unpreferredName, username, date) {
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
         return await client.db()
@@ -86,7 +86,7 @@ async function addName(name) {
     let { names } = await getNames();
     if (!names.includes(name))
         names.push(name);
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
         return await client.db()
@@ -101,7 +101,7 @@ async function addName(name) {
 
 async function deleteName(name) {
     let { names } = await getNames();
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
         await client.db()
@@ -116,7 +116,7 @@ async function deleteName(name) {
 
 async function getUser(username) {
     if (!username) return null;
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
         return await client.db()
@@ -131,7 +131,7 @@ async function getUser(username) {
 
 async function getUserById(id) {
     if (!id) return null;
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
         return await client.db()
@@ -144,13 +144,21 @@ async function getUserById(id) {
     }
 }
 
-async function addUser(username, password) {
-    const client = new MongoClient(url, {useUnifiedTopology: true});
+async function addUser(username, password, isAdmin) {
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
-        return await client.db()
+        const userExists = await client.db()
             .collection(usersCollection)
-            .insertOne({username, password});
+            .findOne({username: username});
+        if (!userExists) {
+            await client.db()
+                .collection(usersCollection)
+                .insertOne({username, password, role: isAdmin ? config.userRoles.ADMIN : config.userRoles.USER});
+            return true;
+        } else {
+            return false;
+        }
     } catch (err) {
         console.log(err);
     } finally {

@@ -7,7 +7,7 @@ body {
     font-family: 'Open Sans', sans-serif;
 }
 
-form {
+.modal {
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -26,4 +26,8 @@ form {
 #name1, #name2 {
   opacity: 1;
   transition: 1s opacity;
+}
+
+.text-shadow {
+    text-shadow: 2px 2px silver;
 }
