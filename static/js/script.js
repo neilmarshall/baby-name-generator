@@ -62,6 +62,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             preferredName.style.opacity = '1';
             unpreferredName.style.opacity = '1';
             resetNames(nameElement1A, nameElement2A);
+            nameElement1B.innerText = nameElement1A.innerText;
+            nameElement2B.innerText = nameElement2A.innerText;
         }, 1000);
 
         const username = document.getElementById("results-table-1-A").getAttribute('data-user');
