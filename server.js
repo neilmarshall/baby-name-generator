@@ -1,13 +1,14 @@
-const config = require('./config.js');
-const repository = require('./names-repository.js');
 const express = require('express');
 const session = require('express-session')
 const hbs = require('express-handlebars');
+const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const connectEnsureLogin = require('connect-ensure-login');
-var flash = require('connect-flash');
+const flash = require('connect-flash');
+const config = require('./config.js');
+const repository = require('./names-repository.js');
 
 // instantiate application
 const app = express();
@@ -53,6 +54,7 @@ passport.deserializeUser(async function(id, done) {
 
 
 // establish middleware pipelines
+app.use(morgan('combined'))
 app.use(express.static(`${__dirname}/static`));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
@@ -89,12 +91,13 @@ app.get('/logout', connectEnsureLogin.ensureLoggedIn(), function(req, res){
 });
 
 app.get('/api/names', loggedInOr401, async (req, res) => {
-    res.send(await repository.getNames());
+    res.status(200).send(await repository.getNames());
 });
 
 app.get('/api/favouritenames/:username', loggedInOr401, async (req, res) => {
-    const username = req.params.username;
-    res.send(await repository.getFavouriteNames(username));
+    repository.getFavouriteNames(req.params.username)
+        .then(response => res.status(200).send(response))
+        .catch(err => console.error(err));
 });
 
 
@@ -104,18 +107,20 @@ app.post('/login',
         {successRedirect: '/', failureRedirect: '/login', failureFlash: true})
 );
 
-app.post('/api/names/:name', loggedInOr401, async (req, res) => {
-    const obj = await repository.addName(req.params.name);
-    res.status(201).send(obj);
+app.post('/api/names/:name', loggedInOr401, (req, res) => {
+    repository.addName(req.params.name)
+        .then(obj => res.status(201).send(obj))
+        .catch(err => console.error(err));
 });
 
-app.post('/api/favouritenames', loggedInOr401, async (req, res) => {
-    const obj = await repository.addFavouriteNames(
-        req.body.preferredName,
-        req.body.unpreferredName,
-        req.body.username,
-        new Date());
-    res.status(201).send(obj);
+app.post('/api/favouritenames', loggedInOr401, (req, res) => {
+    repository.addFavouriteNames(
+            req.body.preferredName,
+            req.body.unpreferredName,
+            req.body.username,
+            new Date())
+        .then(obj => res.status(201).send(obj))
+        .catch(err => console.error(err));
 });
 
 app.post('/api/users', loggedInOr401, async (req, res) => {
@@ -125,16 +130,18 @@ app.post('/api/users', loggedInOr401, async (req, res) => {
     bcrypt.hash(req.body.password, 10)
         .then(hash => repository.addUser(req.body.username, hash, req.body.role === config.userRoles.ADMIN))
         .then(userCreated => userCreated ? res.status(201).send() : res.status(409).send())
-        .catch(err => console.log(err));
+        .catch(err => console.error(err));
 });
 
 
 // DELETE
-app.delete('/api/names/:name', loggedInOr401, async (req, res) => {
-    await repository.deleteName(req.params.name);
-    res.status(204).send();
+app.delete('/api/names/:name', loggedInOr401, (req, res) => {
+    repository.deleteName(req.params.name)
+        .then(() => res.status(204).send())
+        .catch(err => console.error(err));
 });
 
 
 // run server
 app.listen(config.PORT)
+console.info(`Application starting; listening on port ${config.PORT}`);

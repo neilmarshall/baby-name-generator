@@ -12,7 +12,7 @@ async function getNames() {
             .collection(namesCollection)
             .findOne();
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
@@ -60,7 +60,7 @@ async function getFavouriteNames(username) {
 
         return sortedNames.map(name => { return {name, total: nameCounts[name]}; });
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
@@ -76,7 +76,7 @@ async function addFavouriteNames(preferredName, unpreferredName, username, date)
                 preferredName, unpreferredName, username, date
             });
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
@@ -93,7 +93,7 @@ async function addName(name) {
             .collection(namesCollection)
             .findOneAndReplace({}, {names: names}, {returnOriginal: false});
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
@@ -108,7 +108,7 @@ async function deleteName(name) {
             .collection(namesCollection)
             .findOneAndReplace({}, {names: names.filter(n => n !== name)});
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
@@ -123,7 +123,7 @@ async function getUser(username) {
             .collection(usersCollection)
             .findOne({username: username});
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
@@ -138,7 +138,7 @@ async function getUserById(id) {
             .collection(usersCollection)
             .findOne({_id: ObjectId(id)});
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
@@ -160,7 +160,7 @@ async function addUser(username, password, isAdmin) {
             return false;
         }
     } catch (err) {
-        console.log(err);
+        console.error(err);
     } finally {
         client.close();
     }
