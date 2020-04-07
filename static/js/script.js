@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await buildResultsTable(table1A, tableId1A, primaryNameElements);
         await buildResultsTable(table2A, tableId2A, secondaryNameElements);
         await buildResultsTable(table1B, tableId1B, primaryNameElements);
-        await buildResultsTable(table2A, tableId2A, secondaryNameElements);
+        await buildResultsTable(table2B, tableId2B, secondaryNameElements);
     }
 
     const logFavouriteName = async function(preferredName, unpreferredName) {
