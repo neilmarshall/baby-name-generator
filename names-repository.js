@@ -114,6 +114,22 @@ async function deleteName(name) {
     }
 }
 
+async function getUsers() {
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        return await client.db()
+            .collection(usersCollection)
+            .find()
+            .project({username: 1, _id: 0})
+            .toArray();
+    } catch (err) {
+        console.error(err);
+    } finally {
+        client.close();
+    }
+}
+
 async function getUser(username) {
     if (!username) return null;
     const client = new MongoClient(config.URL, {useUnifiedTopology: true});
@@ -173,6 +189,7 @@ module.exports = {
     deleteName,
     getFavouriteNames,
     getNames,
+    getUsers,
     getUser,
     getUserById
 }

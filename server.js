@@ -70,13 +70,17 @@ const loggedInOr401 = (req, res, next) => req.user ? next() : res.status(401).se
 
 
 // GET
-app.get('/', connectEnsureLogin.ensureLoggedIn(), (req, res) => {
-    // If this function gets called, authentication was successful
-    // `req.user` contains the authenticated user
-
-    // TODO - do something with the req.user object!!!
-    console.log(req.user);
-    res.render('index', {isAdmin: req.user.role === config.userRoles.ADMIN});
+app.get('/', connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
+    res.render('index', {
+        isAdmin: req.user.role === config.userRoles.ADMIN,
+        username: req.user.username,
+        otherUsers: await repository.getUsers()
+            .then(response =>
+                response.map(obj => obj.username)
+                    .filter(name => name !== req.user.username)
+                    .sort())
+            .catch(err => console.error(err))
+    });
 });
 
 app.get('/login', (req, res) => {

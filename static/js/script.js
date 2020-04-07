@@ -19,12 +19,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         nameElement2.innerText = `${secondName} ${surname}`
     }
 
-    const buildResultsTable = async function(tableId, tableHeader, username) {
+    const buildResultsTable = async function(tableId) {
         const table = document.getElementById(tableId);
-        table.innerHTML = '';
+        const username = table.getAttribute('data-user');
+        document.querySelectorAll(`#${tableId} td`).forEach(e => e.parentNode.removeChild(e))
         const nameElements = await fetch(`/api/favouritenames/${username}`)
             .then(response => response.json());
-        table.insertAdjacentHTML('beforeend', `<tr class="border-bottom"><th colspan="2">${tableHeader}</th></tr>`);
         nameElements.map(element => {
             const signedTotal = element.total > 0 ? `+${element.total}` : element.total < 0 ? `${element.total}` : '-';
             const html = `<tr><td>${element.name}</td><td align="right">${signedTotal}</td></tr>`;
@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    const logFavouriteName = function(preferredName, unpreferredName, username) {
+    const logFavouriteName = function(preferredName, unpreferredName) {
+        const username = document.getElementById("results-table-1").getAttribute('data-user');
         preferredName.style.opacity = '0';
         unpreferredName.style.opacity = '0';
         window.setTimeout(async () => {
@@ -47,21 +48,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                     username: username})
             });
             resetNames(nameElement1, nameElement2);
-            buildResultsTable("results-table-1", "Sam's choices", "Sam");
-            buildResultsTable("results-table-2", "Neil's choices", "Neil");
+            buildResultsTable("results-table-1");
+            buildResultsTable("results-table-2");
         }, 1000);
     }
 
     const nameElement1 = document.getElementById('name1');
     const nameElement2 = document.getElementById('name2');
 
-    nameElement1.addEventListener('click', () => logFavouriteName(nameElement1, nameElement2, "Sam"));
-    nameElement2.addEventListener('click', () => logFavouriteName(nameElement2, nameElement1, "Neil"));
+    nameElement1.addEventListener('click', () => logFavouriteName(nameElement1, nameElement2));
+    nameElement2.addEventListener('click', () => logFavouriteName(nameElement2, nameElement1));
 
     resetNames(nameElement1, nameElement2);
 
-    buildResultsTable("results-table-1", "Sam's choices", "Sam");
-    buildResultsTable("results-table-2", "Neil's choices", "Neil");
+    buildResultsTable("results-table-1");
+    buildResultsTable("results-table-2");
+
+    document.getElementById('otherNameFormControl').addEventListener('change', e => {
+        document.getElementById("results-table-2").setAttribute('data-user', e.target.value);
+        buildResultsTable("results-table-2");
+    });
 
     document.getElementById('addNameButton').addEventListener('click', () => {
         $('#addNameModal').modal();

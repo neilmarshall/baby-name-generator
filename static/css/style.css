@@ -28,6 +28,10 @@ body {
   transition: 1s opacity;
 }
 
+#otherNameFormControl {
+    color: #8C8C94;
+}
+
 .text-shadow {
     text-shadow: 2px 2px silver;
 }

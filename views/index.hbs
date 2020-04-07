@@ -31,10 +31,26 @@
 
 <div class="row container">
     <div class="col-2">
-        <table id="results-table-1"></table>
+        <table id="results-table-1" data-user={{username}}>
+            <tr class="border-bottom text-center">
+                <th colspan="2">{{username}}<br /><br /></th>
+            </tr>
+        </table>
     </div>
     <div class="col-2">
-        <table id="results-table-2"></table>
+        <table id="results-table-2" data-user={{lookup otherUsers 0}}>
+            <tr class="border-bottom text-center">
+                <th colspan="2">
+                    <div class="form-group">
+                        <select class="form-control-sm btn btn-outline-light btn-sm" id="otherNameFormControl">
+                            {{#each otherUsers}}
+                                <option>{{this}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
+                </th>
+            </tr>
+        </table>
     </div>
     <div class="col-8">
         <div class="img-placeholder">
