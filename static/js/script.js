@@ -23,13 +23,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const table = document.getElementById(tableId);
         const username = table.getAttribute('data-user');
         document.querySelectorAll(`#${tableId} td`).forEach(e => e.parentNode.removeChild(e))
-        const nameElements = await fetch(`/api/favouritenames/${username}`)
-            .then(response => response.json());
-        nameElements.map(element => {
-            const signedTotal = element.total > 0 ? `+${element.total}` : element.total < 0 ? `${element.total}` : '-';
-            const html = `<tr><td>${element.name}</td><td align="right">${signedTotal}</td></tr>`;
-            table.insertAdjacentHTML('beforeend', html);
-        });
+        const nameElements = username
+            ? (await fetch(`/api/favouritenames/${username}`).then(response => response.json()))
+            : null;
+        if (nameElements) {
+            nameElements.map(element => {
+                const signedTotal = element.total > 0 ? `+${element.total}` : element.total < 0 ? `${element.total}` : '-';
+                const html = `<tr><td>${element.name}</td><td align="right">${signedTotal}</td></tr>`;
+                table.insertAdjacentHTML('beforeend', html);
+            });
+        }
     }
 
     const logFavouriteName = function(preferredName, unpreferredName) {

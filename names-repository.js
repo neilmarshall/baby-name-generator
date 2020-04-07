@@ -39,26 +39,30 @@ async function getFavouriteNames(username) {
             ])
             .toArray();
 
-        const nameCounts = {};
-        for (let [_, {_id, count}] of Object.entries(preferredNames)) {
-            nameCounts[_id] = count;
-        };
-        for (let [_, {_id, count}] of Object.entries(unpreferredNames)) {
-            if (nameCounts[_id]) {
-                nameCounts[_id] += count;
-            } else {
+        if (preferredNames || unpreferredNames) {
+            const nameCounts = {};
+            for (let [_, {_id, count}] of Object.entries(preferredNames)) {
                 nameCounts[_id] = count;
-            }
-        };
+            };
+            for (let [_, {_id, count}] of Object.entries(unpreferredNames)) {
+                if (nameCounts[_id]) {
+                    nameCounts[_id] += count;
+                } else {
+                    nameCounts[_id] = count;
+                }
+            };
 
-        const sortedNames = Object.keys(nameCounts)
-            .sort((n1, n2) =>
-                nameCounts[n1] === nameCounts[n2]
-                    ? n1 < n2 ? -1 : 1
-                    : nameCounts[n1] > nameCounts[n2] ? -1 : 1
-            );
+            const sortedNames = Object.keys(nameCounts)
+                .sort((n1, n2) =>
+                    nameCounts[n1] === nameCounts[n2]
+                        ? n1 < n2 ? -1 : 1
+                        : nameCounts[n1] > nameCounts[n2] ? -1 : 1
+                );
 
-        return sortedNames.map(name => { return {name, total: nameCounts[name]}; });
+            return sortedNames.map(name => { return {name, total: nameCounts[name]}; });
+        } else {
+            return null;
+        }
     } catch (err) {
         console.error(err);
     } finally {
