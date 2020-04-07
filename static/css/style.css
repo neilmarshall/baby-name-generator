@@ -1,0 +1,37 @@
+body {
+    color: #8C8C94;
+    font-family: 'Pacifico', cursive;
+}
+
+.lead {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.modal {
+    font-family: 'Open Sans', sans-serif;
+}
+
+.font-xs {
+    font-size: x-small;
+}
+
+.img-placeholder {
+    background-image: url("/images/DBA2C92B-0DBF-4044-8DB9-F66D01EB978A_1_105_c.jpeg");
+    background-repeat: no-repeat;
+    background-position: center;
+    min-height: 550px;
+    font-size: larger;
+}
+
+#name1, #name2 {
+  opacity: 1;
+  transition: 1s opacity;
+}
+
+#otherNameFormControl {
+    color: #8C8C94;
+}
+
+.text-shadow {
+    text-shadow: 2px 2px silver;
+}
