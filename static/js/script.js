@@ -115,6 +115,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('#deleteNameModal').modal();
     });
 
+    document.getElementById('changePasswordButton').addEventListener('click', () => {
+        $('#changePasswordModal').modal();
+
+        document.getElementById('changePasswordModalButton').addEventListener('click', e => {
+            e.preventDefault();
+
+            const currentPassword = e.target.form.elements.currentPassword.value;
+            const newPassword = e.target.form.elements.newPassword.value;
+
+            if (currentPassword && newPassword) {
+                fetch('/api/users', {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ currentPassword, newPassword})
+                });
+            }
+
+            $('#changePasswordModal').modal('hide');
+            e.target.form.reset();
+        });
+    });
+
     document.getElementById('addUserButton').addEventListener('click', () => {
         $('#addUserModal').modal();
 

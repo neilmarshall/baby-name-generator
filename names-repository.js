@@ -1,5 +1,7 @@
 const { MongoClient, ObjectId } = require('mongodb');
+const bcrypt = require('bcryptjs');
 const config = require('./config.js');
+
 const namesCollection = 'names';
 const favouriteNamesCollection = 'favouriteNames';
 const usersCollection = 'users';
@@ -186,6 +188,43 @@ async function addUser(username, password, isAdmin) {
     }
 }
 
+async function validatePassword(userId, password) {
+    if (!userId) return false;
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        const user = await client.db()
+            .collection(usersCollection)
+            .findOne({_id: ObjectId(userId)});
+        return await bcrypt.compare(password, user.password);
+    } catch (err) {
+        console.error(err);
+        return false;
+    } finally {
+        client.close();
+    }
+}
+
+async function updatePassword(userId, hash) {
+    if (!userId) return false;
+    const client = new MongoClient(config.URL, {useUnifiedTopology: true});
+    try {
+        await client.connect();
+        const user = await client.db()
+            .collection(usersCollection)
+            .updateOne(
+                {_id: ObjectId(userId)},
+                {$set: {password: hash}}
+            );
+        return true;
+    } catch (err) {
+        console.error(err);
+        return false;
+    } finally {
+        client.close();
+    }
+}
+
 module.exports = {
     addFavouriteNames,
     addName,
@@ -195,6 +234,8 @@ module.exports = {
     getNames,
     getUsers,
     getUser,
-    getUserById
+    getUserById,
+    updatePassword,
+    validatePassword
 }
 

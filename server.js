@@ -137,6 +137,19 @@ app.post('/api/users', loggedInOr401, async (req, res) => {
         .catch(err => console.error(err));
 });
 
+// PATCH
+app.patch('/api/users', loggedInOr401, async (req, res) => {
+    repository.validatePassword(req.user.id, req.body.currentPassword)
+        .then(validated =>
+            validated
+                ? bcrypt.hash(req.body.newPassword, 10)
+                    .then(hash => repository.updatePassword(req.user.id, hash))
+                    .then(passwordUpdated => passwordUpdated ? res.status(204).send() : res.status(500).send())
+                    .catch(err => console.error(err))
+                : res.status(401).send())
+        .catch(err => console.error(err));
+});
+
 
 // DELETE
 app.delete('/api/names/:name', loggedInOr401, (req, res) => {
