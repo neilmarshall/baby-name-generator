@@ -80,8 +80,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     buildResultsTable("results-table-2-B");
 
     document.getElementById('otherNameFormControl-A').addEventListener('change', e => {
-        document.getElementById("results-table-2").setAttribute('data-user', e.target.value);
-        buildResultsTable("results-table-2");
+        document.getElementById("results-table-2-A").setAttribute('data-user', e.target.value);
+        buildResultsTable("results-table-2-A");
+        document.getElementById("results-table-2-B").setAttribute('data-user', e.target.value);
+        buildResultsTable("results-table-2-B");
     });
 
     document.getElementById('addNameButton').addEventListener('click', () => {
