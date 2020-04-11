@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const logFavouriteName = function(preferredName, unpreferredName) {
-        const username = document.getElementById("results-table-1").getAttribute('data-user');
+        const username = document.getElementById("results-table-1-A").getAttribute('data-user');
         preferredName.style.opacity = '0';
         unpreferredName.style.opacity = '0';
         window.setTimeout(async () => {
@@ -50,24 +50,36 @@ document.addEventListener('DOMContentLoaded', async () => {
                     unpreferredName: unpreferredName.innerText.split(' ')[0],
                     username: username})
             });
-            resetNames(nameElement1, nameElement2);
-            buildResultsTable("results-table-1");
-            buildResultsTable("results-table-2");
+            resetNames(nameElement1A, nameElement2A);
+            nameElement1B.innerText = nameElement1A.innerText;
+            nameElement2B.innerText = nameElement2A.innerText;
+            buildResultsTable("results-table-1-A");
+            buildResultsTable("results-table-2-A");
+            buildResultsTable("results-table-1-B");
+            buildResultsTable("results-table-2-B");
         }, 1000);
     }
 
-    const nameElement1 = document.getElementById('name1');
-    const nameElement2 = document.getElementById('name2');
+    const nameElement1A = document.getElementById('name1-A');
+    const nameElement2A = document.getElementById('name2-A');
+    const nameElement1B = document.getElementById('name1-B');
+    const nameElement2B = document.getElementById('name2-B');
 
-    nameElement1.addEventListener('click', () => logFavouriteName(nameElement1, nameElement2));
-    nameElement2.addEventListener('click', () => logFavouriteName(nameElement2, nameElement1));
+    nameElement1A.addEventListener('click', () => logFavouriteName(nameElement1A, nameElement2A));
+    nameElement2A.addEventListener('click', () => logFavouriteName(nameElement2A, nameElement1A));
+    nameElement1B.addEventListener('click', () => logFavouriteName(nameElement1B, nameElement2B));
+    nameElement2B.addEventListener('click', () => logFavouriteName(nameElement2B, nameElement1B));
 
-    resetNames(nameElement1, nameElement2);
+    resetNames(nameElement1A, nameElement2A);
+    nameElement1B.innerText = nameElement1A.innerText;
+    nameElement2B.innerText = nameElement2A.innerText;
 
-    buildResultsTable("results-table-1");
-    buildResultsTable("results-table-2");
+    buildResultsTable("results-table-1-A");
+    buildResultsTable("results-table-2-A");
+    buildResultsTable("results-table-1-B");
+    buildResultsTable("results-table-2-B");
 
-    document.getElementById('otherNameFormControl').addEventListener('change', e => {
+    document.getElementById('otherNameFormControl-A').addEventListener('change', e => {
         document.getElementById("results-table-2").setAttribute('data-user', e.target.value);
         buildResultsTable("results-table-2");
     });

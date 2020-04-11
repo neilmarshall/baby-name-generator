@@ -1,0 +1,13 @@
+<table id="{{id}}" data-user={{lookup otherUsers 0}}>
+  <tr class="border-bottom text-center">
+    <th colspan="2">
+      <div class="form-group">
+        <select class="form-control-sm btn btn-sm" id="{{formControl}}">
+          {{#each otherUsers}}
+            <option>{{this}}</option>
+          {{/each}}
+        </select>
+      </div>
+    </th>
+  </tr>
+</table>

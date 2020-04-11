@@ -28,10 +28,34 @@ body {
   transition: 1s opacity;
 }
 
-#otherNameFormControl {
+#otherNameFormControl, .form-control-sm.btn {
     color: #8C8C94;
 }
 
 .text-shadow {
     text-shadow: 2px 2px silver;
+}
+
+@media screen and (orientation: portrait) {
+    #main-content-1 {
+        display: none;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    #main-content-1 {
+        display: block;
+    }
+}
+
+@media screen and (orientation: portrait) {
+    #main-content-2 {
+        display: block;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    #main-content-2 {
+        display: none;
+    }
 }

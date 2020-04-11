@@ -1,9 +1,12 @@
 <header class="display-3 text-center">
   <div class="row">
     <div class="col-8">
-      Sam & Neil
-
-      <span class="lead">Due 24th June 2020</span>
+      <div class="row">
+        Sam & Neil
+      </div>
+      <div class="row lead col-12">
+        Due 24th June 2020
+      </div>
     </div>
 
     <div class="col-4">
@@ -30,49 +33,37 @@
   <hr>
 </header>
 
-<div class="row container">
-  <div class="col-2">
-    <table id="results-table-1" data-user={{username}}>
-      <tr class="border-bottom text-center">
-        <th colspan="2">{{username}}<br /><br /></th>
-      </tr>
-    </table>
-  </div>
-  <div class="col-2">
-    <table id="results-table-2" data-user={{lookup otherUsers 0}}>
-      <tr class="border-bottom text-center">
-        <th colspan="2">
-          <div class="form-group">
-            <select class="form-control-sm btn btn-outline-light btn-sm" id="otherNameFormControl">
-              {{#each otherUsers}}
-                <option>{{this}}</option>
-              {{/each}}
-            </select>
-          </div>
-        </th>
-      </tr>
-    </table>
-  </div>
-  <div class="col-8">
-    <div class="img-placeholder">
-      <div class="row">
-        <div class="col-4 offset-1 mt-4">
-          <div class="row">
-            <div class="col-4 text-center text-shadow" id="name1"></div>
-          </div>
-          <div class="row font-xs">
-            <div class="col-4 offset-4 text-center text-shadow"> or </div>
-          </div>
-          <div class="row">
-            <div class="col-4 offset-8 text-center text-shadow" id="name2"></div>
-          </div>
-          <div class="row col-12 lead font-xs font-italic">
-            Click on your favourite name
-          </div>
-        </div>
+<div class="container">
+  <div id="main-content-1">
+    <div class="row">
+      <div class="col-2">
+        {{> tableMainUser id="results-table-1-A" }}
+      </div>
+      <div class="col-2">
+        {{> tableOtherUser id="results-table-2-A" formControl="otherNameFormControl-A" }}
+      </div>
+      <div class="col-8">
+        {{> mainImage id1="name1-A" id2="name2-A" }}
       </div>
     </div>
   </div>
+
+  <div id="main-content-2">
+    <div class="row">
+      <div class="col">
+        {{> mainImage id1="name1-B" id2="name2-B" }}
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4 offset-2">
+        {{> tableMainUser id="results-table-1-B" }}
+      </div>
+      <div class="col-4">
+        {{> tableOtherUser id="results-table-2-B" }}
+      </div>
+    </div>
+  </div>
+</div>
 
   {{> addName }}
   {{> deleteName }}
@@ -80,4 +71,3 @@
   {{> addUser }}
 
   <script src="js/script.js"></script>
-</div>
