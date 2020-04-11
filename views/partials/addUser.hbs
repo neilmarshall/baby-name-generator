@@ -1,0 +1,46 @@
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addUserModalLabel">Add a user</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="mr-2">
+          <div class="form-group row">
+            <label for="addUsernameModalId" class="col-sm-5 col-form-label">Username</label>
+            <input type="text" class="form-control col-sm-7" name="username" id="addUsernameModalId">
+          </div>
+          <div class="form-group row">
+            <label for="addPasswordModalId" class="col-sm-5 col-form-label">Password</label>
+            <input type="password" class="form-control col-sm-7" name="password" id="addPasswordModalId">
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <legend class="col-form-label col-sm-3 pt-0">Role</legend>
+              <div class="col-sm-9">
+                <div class="form-check-inline">
+                  <input class="form-check-input" type="radio" name="roleRadios" id="roleRadios1" value="user" checked>
+                  <label class="form-check-label" for="roleRadios1">
+                    User
+                  </label>
+                </div>
+                <div class="form-check-inline">
+                  <input class="form-check-input" type="radio" name="roleRadios" id="roleRadios2" value="admin">
+                  <label class="form-check-label" for="roleRadios2">
+                    Admin
+                  </label>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+          <button type="submit" id="addUserModalButton" class="btn btn-secondary">
+            Add user
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
