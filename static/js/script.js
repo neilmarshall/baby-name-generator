@@ -19,45 +19,63 @@ document.addEventListener('DOMContentLoaded', async () => {
         nameElement2.innerText = `${secondName} ${surname}`
     }
 
-    const buildResultsTable = async function(tableId) {
-        const table = document.getElementById(tableId);
-        const username = table.getAttribute('data-user');
-        document.querySelectorAll(`#${tableId} td`).forEach(e => e.parentNode.removeChild(e))
-        const nameElements = username
-            ? (await fetch(`/api/favouritenames/${username}`).then(response => response.json()))
+    const buildResultsTables = async function() {
+        const tableId1A = "results-table-1-A";
+        const tableId2A = "results-table-2-A";
+        const tableId1B = "results-table-1-B";
+        const tableId2B = "results-table-2-B";
+
+        const table1A = document.getElementById(tableId1A);
+        const table2A = document.getElementById(tableId2A);
+        const table1B = document.getElementById(tableId1B);
+        const table2B = document.getElementById(tableId2B);
+
+        const primaryUsername = table1A.getAttribute('data-user');
+        const secondaryUsername = table2A.getAttribute('data-user');
+        const primaryNameElements = primaryUsername
+            ? (await fetch(`/api/favouritenames/${primaryUsername}`).then(response => response.json()))
             : null;
-        if (nameElements) {
-            nameElements.map(element => {
-                const signedTotal = element.total > 0 ? `+${element.total}` : element.total < 0 ? `${element.total}` : '-';
-                const html = `<tr><td>${element.name}</td><td align="right">${signedTotal}</td></tr>`;
-                table.insertAdjacentHTML('beforeend', html);
-            });
+        const secondaryNameElements = secondaryUsername
+            ? (await fetch(`/api/favouritenames/${secondaryUsername}`).then(response => response.json()))
+            : null;
+
+        const buildResultsTable = async function(table, tableId, nameElements) {
+            document.querySelectorAll(`#${tableId} td`).forEach(e => e.parentNode.removeChild(e))
+            if (nameElements) {
+                nameElements.map(element => {
+                    const signedTotal = element.total > 0 ? `+${element.total}` : element.total < 0 ? `${element.total}` : '-';
+                    const html = `<tr><td>${element.name}</td><td align="right">${signedTotal}</td></tr>`;
+                    table.insertAdjacentHTML('beforeend', html);
+                });
+            }
         }
+        await buildResultsTable(table1A, tableId1A, primaryNameElements);
+        await buildResultsTable(table2A, tableId2A, secondaryNameElements);
+        await buildResultsTable(table1B, tableId1B, primaryNameElements);
+        await buildResultsTable(table2A, tableId2A, secondaryNameElements);
     }
 
-    const logFavouriteName = function(preferredName, unpreferredName) {
-        const username = document.getElementById("results-table-1-A").getAttribute('data-user');
+    const logFavouriteName = async function(preferredName, unpreferredName) {
         preferredName.style.opacity = '0';
         unpreferredName.style.opacity = '0';
-        window.setTimeout(async () => {
+        window.setTimeout(() => {
             preferredName.style.opacity = '1';
             unpreferredName.style.opacity = '1';
-            await fetch('/api/favouritenames', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    preferredName: preferredName.innerText.split(' ')[0],
-                    unpreferredName: unpreferredName.innerText.split(' ')[0],
-                    username: username})
-            });
             resetNames(nameElement1A, nameElement2A);
-            nameElement1B.innerText = nameElement1A.innerText;
-            nameElement2B.innerText = nameElement2A.innerText;
-            buildResultsTable("results-table-1-A");
-            buildResultsTable("results-table-2-A");
-            buildResultsTable("results-table-1-B");
-            buildResultsTable("results-table-2-B");
         }, 1000);
+
+        const username = document.getElementById("results-table-1-A").getAttribute('data-user');
+        await fetch('/api/favouritenames', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                preferredName: preferredName.innerText.split(' ')[0],
+                unpreferredName: unpreferredName.innerText.split(' ')[0],
+                username: username})
+        });
+        nameElement1B.innerText = nameElement1A.innerText;
+        nameElement2B.innerText = nameElement2A.innerText;
+        buildResultsTables();
     }
 
     const nameElement1A = document.getElementById('name1-A');
@@ -74,16 +92,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     nameElement1B.innerText = nameElement1A.innerText;
     nameElement2B.innerText = nameElement2A.innerText;
 
-    buildResultsTable("results-table-1-A");
-    buildResultsTable("results-table-2-A");
-    buildResultsTable("results-table-1-B");
-    buildResultsTable("results-table-2-B");
+    buildResultsTables();
 
     document.getElementById('otherNameFormControl-A').addEventListener('change', e => {
         document.getElementById("results-table-2-A").setAttribute('data-user', e.target.value);
-        buildResultsTable("results-table-2-A");
         document.getElementById("results-table-2-B").setAttribute('data-user', e.target.value);
-        buildResultsTable("results-table-2-B");
+        buildResultsTables();
     });
 
     document.getElementById('addNameButton').addEventListener('click', () => {
@@ -151,26 +165,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    document.getElementById('addUserButton').addEventListener('click', () => {
-        $('#addUserModal').modal();
+    if (document.getElementById('addUserButton')) {
+        document.getElementById('addUserButton').addEventListener('click', () => {
+            $('#addUserModal').modal();
 
-        document.getElementById('addUserModalButton').addEventListener('click', e => {
-            e.preventDefault();
+            document.getElementById('addUserModalButton').addEventListener('click', e => {
+                e.preventDefault();
 
-            const username = e.target.form.elements.username.value;
-            const password = e.target.form.elements.password.value;
-            const role = e.target.form.elements.roleRadios.value;
+                const username = e.target.form.elements.username.value;
+                const password = e.target.form.elements.password.value;
+                const role = e.target.form.elements.roleRadios.value;
 
-            if (username && password && role) {
-                fetch('/api/users', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ username, password, role})
-                });
-            }
+                if (username && password && role) {
+                    fetch('/api/users', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ username, password, role})
+                    });
+                }
 
-            $('#addUserModal').modal('hide');
-            e.target.form.reset();
+                $('#addUserModal').modal('hide');
+                e.target.form.reset();
+            });
         });
-    });
+    }
 });

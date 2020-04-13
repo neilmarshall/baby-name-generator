@@ -23,7 +23,7 @@ body {
     font-size: larger;
 }
 
-#name1, #name2 {
+#name1-A, #name2-A, #name1-B-A, #name2-B {
   opacity: 1;
   transition: 1s opacity;
 }
