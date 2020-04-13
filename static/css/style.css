@@ -23,7 +23,7 @@ body {
     font-size: larger;
 }
 
-#name1-A, #name2-A, #name1-B, #name2-B {
+.fadeable {
   opacity: 1;
   transition: 1s opacity;
 }

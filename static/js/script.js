@@ -1,8 +1,18 @@
+import { buildAddNameEventHandler, buildDeleteNameEventHandler,
+         buildChangePasswordEventHandler, buildAddUserEventHandler } from './modalEventHandlers.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
 
+    // define variables
     const { names } = await fetch('/api/names')
         .then(response => response.json());
+    const nameElement1A = document.getElementById('name1-A');
+    const nameElement2A = document.getElementById('name2-A');
+    const nameElement1B = document.getElementById('name1-B');
+    const nameElement2B = document.getElementById('name2-B');
 
+
+    // define locally-scoped functions
     const getRandomName = function(firstName) {
         if (firstName) {
             const secondName = getRandomName();
@@ -11,12 +21,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         return names[Math.floor(Math.random() * names.length)];
     }
 
-    const resetNames = (nameElement1, nameElement2) => {
+    const resetNames = () => {
         const surname = 'Marshall';
         const firstName = getRandomName();
         const secondName = getRandomName(firstName);
-        nameElement1.innerText = `${firstName} ${surname}`
-        nameElement2.innerText = `${secondName} ${surname}`
+        nameElement1A.innerText = `${firstName} ${surname}`
+        nameElement1B.innerText = `${firstName} ${surname}`
+        nameElement2A.innerText = `${secondName} ${surname}`
+        nameElement2B.innerText = `${secondName} ${surname}`
     }
 
     const buildResultsTables = async function() {
@@ -61,9 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.setTimeout(() => {
             preferredName.style.opacity = '1';
             unpreferredName.style.opacity = '1';
-            resetNames(nameElement1A, nameElement2A);
-            nameElement1B.innerText = nameElement1A.innerText;
-            nameElement2B.innerText = nameElement2A.innerText;
+            resetNames();
         }, 1000);
 
         const username = document.getElementById("results-table-1-A").getAttribute('data-user');
@@ -75,120 +85,35 @@ document.addEventListener('DOMContentLoaded', async () => {
                 unpreferredName: unpreferredName.innerText.split(' ')[0],
                 username: username})
         });
-        nameElement1B.innerText = nameElement1A.innerText;
-        nameElement2B.innerText = nameElement2A.innerText;
         buildResultsTables();
     }
 
-    const nameElement1A = document.getElementById('name1-A');
-    const nameElement2A = document.getElementById('name2-A');
-    const nameElement1B = document.getElementById('name1-B');
-    const nameElement2B = document.getElementById('name2-B');
 
+    // add event listeners
     nameElement1A.addEventListener('click', () => logFavouriteName(nameElement1A, nameElement2A));
     nameElement2A.addEventListener('click', () => logFavouriteName(nameElement2A, nameElement1A));
     nameElement1B.addEventListener('click', () => logFavouriteName(nameElement1B, nameElement2B));
     nameElement2B.addEventListener('click', () => logFavouriteName(nameElement2B, nameElement1B));
 
-    resetNames(nameElement1A, nameElement2A);
-    nameElement1B.innerText = nameElement1A.innerText;
-    nameElement2B.innerText = nameElement2A.innerText;
+    document.querySelectorAll('.otherUserSelectButton').forEach(element => {
+        element.addEventListener('change', e => {
+            document.querySelectorAll('.otherUserSelectButton').forEach(element => {
+                element.value = e.target.value;
+            });
+            document.getElementById("results-table-2-A").setAttribute('data-user', e.target.value);
+            document.getElementById("results-table-2-B").setAttribute('data-user', e.target.value);
+            buildResultsTables();
+        });
+    });
 
+    buildAddNameEventHandler(names);
+    buildDeleteNameEventHandler(names);
+    buildChangePasswordEventHandler();
+    buildAddUserEventHandler();
+
+
+    // initial page setup
+    resetNames();
     buildResultsTables();
 
-    document.getElementById('otherNameFormControl-A').addEventListener('change', e => {
-        document.getElementById("results-table-2-A").setAttribute('data-user', e.target.value);
-        document.getElementById("results-table-2-B").setAttribute('data-user', e.target.value);
-        buildResultsTables();
-    });
-
-    document.getElementById('addNameButton').addEventListener('click', () => {
-        $('#addNameModal').modal();
-
-        document.getElementById('addNameModalButton').addEventListener('click', e => {
-            e.preventDefault();
-            if (e.target.form.name.value) {
-                fetch(`/api/names/${e.target.form.name.value}`, { method: 'POST' });
-                names.push(e.target.form.name.value);
-            }
-            $('#addNameModal').modal('hide');
-            e.target.form.reset();
-        });
-    });
-
-    document.getElementById('deleteNameButton').addEventListener('click', async () => {
-        const formElement = document.querySelector('#deleteNameModalBody');
-        formElement.innerHTML = '';
-        names.sort().forEach(name => {
-            formElement.insertAdjacentHTML('beforeend',
-                `<div class="form-check">>
-                    <input class="form-check-input" type="checkbox" value=""
-                        id="deleteCheckBoxId-${name}">
-                    <label class="form-check-label" for="deleteCheckBoxId-${name}">
-                        ${name}
-                    </label>
-                </div>`
-            );
-        });
-
-        document.getElementById('deleteNameModalButton').addEventListener('click', async e => {
-            e.preventDefault();
-            $('#deleteNameModal').modal('hide');
-            for (const name of names) {
-                if ($(`#deleteCheckBoxId-${name}`).prop('checked')) {
-                    await fetch(`/api/names/${name}`, { method: 'DELETE' });
-                    names.splice(names.findIndex(n => n === name), 1);
-                }
-            };
-        });
-
-        $('#deleteNameModal').modal();
-    });
-
-    document.getElementById('changePasswordButton').addEventListener('click', () => {
-        $('#changePasswordModal').modal();
-
-        document.getElementById('changePasswordModalButton').addEventListener('click', e => {
-            e.preventDefault();
-
-            const currentPassword = e.target.form.elements.currentPassword.value;
-            const newPassword = e.target.form.elements.newPassword.value;
-
-            if (currentPassword && newPassword) {
-                fetch('/api/users', {
-                    method: 'PATCH',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ currentPassword, newPassword})
-                });
-            }
-
-            $('#changePasswordModal').modal('hide');
-            e.target.form.reset();
-        });
-    });
-
-    if (document.getElementById('addUserButton')) {
-        document.getElementById('addUserButton').addEventListener('click', () => {
-            $('#addUserModal').modal();
-
-            document.getElementById('addUserModalButton').addEventListener('click', e => {
-                e.preventDefault();
-
-                const username = e.target.form.elements.username.value;
-                const password = e.target.form.elements.password.value;
-                const role = e.target.form.elements.roleRadios.value;
-
-                if (username && password && role) {
-                    fetch('/api/users', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ username, password, role})
-                    });
-                }
-
-                $('#addUserModal').modal('hide');
-                e.target.form.reset();
-            });
-        });
-    }
 });

@@ -40,7 +40,7 @@
         {{> tableMainUser id="results-table-1-A" }}
       </div>
       <div class="col-2">
-        {{> tableOtherUser id="results-table-2-A" formControl="otherNameFormControl-A" }}
+        {{> tableOtherUser id="results-table-2-A" }}
       </div>
       <div class="col-8">
         {{> mainImage id1="name1-A" id2="name2-A" }}
@@ -65,9 +65,10 @@
   </div>
 </div>
 
-  {{> addName }}
-  {{> deleteName }}
-  {{> changePassword }}
-  {{> addUser }}
+{{> addName }}
+{{> deleteName }}
+{{> changePassword }}
+{{> addUser }}
 
-  <script src="js/script.js"></script>
+<script type="module" src="js/modalEventHandlers.js"></script>
+<script type="module" src="js/script.js"></script>
