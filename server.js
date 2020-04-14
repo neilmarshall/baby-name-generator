@@ -85,6 +85,7 @@ app.get('/', connectEnsureLogin.ensureLoggedIn(), async (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+    if (req.user) { return res.redirect('/'); }
     const errorMsgs = req.flash('error');
     const errors = {message: errorMsgs && errorMsgs[0] ? errorMsgs[0] : null};
     res.render('login', {errors});
