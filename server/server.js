@@ -18,8 +18,8 @@ const app = express();
 app.engine('hbs', hbs({
     extname: 'hbs',
     defaultLayout: 'main',
-    layoutsDir: __dirname + '/views/layouts/',
-    partialsDir: __dirname + '/views/partials/'
+    layoutsDir: __dirname + '/../views/layouts/',
+    partialsDir: __dirname + '/../views/partials/'
 }));
 
 app.set('view engine','hbs');
@@ -56,7 +56,7 @@ passport.deserializeUser(async function(id, done) {
 
 // establish middleware pipelines
 app.use(morgan('combined'))
-app.use(express.static(`${__dirname}/static`));
+app.use(express.static(`${__dirname}/../static`));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(session({
