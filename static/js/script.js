@@ -1,5 +1,4 @@
-import { buildAddNameEventHandler, buildDeleteNameEventHandler,
-         buildChangePasswordEventHandler, buildAddUserEventHandler } from './modalEventHandlers.js';
+import * as eventHandlers from './modalEventHandlers.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -106,10 +105,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    buildAddNameEventHandler(names);
-    buildDeleteNameEventHandler(names);
-    buildChangePasswordEventHandler();
-    buildAddUserEventHandler();
+    eventHandlers.buildAddNameEventHandler(names);
+    eventHandlers.buildDeleteNameEventHandler(names);
+    eventHandlers.buildChangePasswordEventHandler();
+    eventHandlers.buildAddUserEventHandler();
 
 
     // initial page setup
