@@ -8,8 +8,9 @@ interface NameElement {
 document.addEventListener('DOMContentLoaded', async () => {
 
     // define variables
-    const { names } = await fetch('/api/names')
-        .then(response => response.json());
+    const names: Set<string> = await fetch('/api/names')
+        .then(response => response.json())
+        .then(json => new Set(json.names));
     const nameElement1A = document.getElementById('name1-A')!;
     const nameElement2A = document.getElementById('name2-A')!;
     const nameElement1B = document.getElementById('name1-B')!;
@@ -22,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const secondName = getRandomName();
             return secondName !== firstName ? secondName : getRandomName(firstName);
         }
-        return names[Math.floor(Math.random() * names.length)];
+        return Array.from(names)[Math.floor(Math.random() * names.size)];
     }
 
     const resetNames = () => {

@@ -1,13 +1,13 @@
-export function buildAddNameEventHandler(names: string[]) {
+export function buildAddNameEventHandler(names: Set<string>) {
     document.getElementById('addNameButton')!.addEventListener('click', () => {
         $('#addNameModal').modal();
 
         document.getElementById('addNameModalButton')!.addEventListener('click', e => {
             e.preventDefault();
             const name = (<HTMLInputElement>e.target).form!["nameToAdd"].value;
-            if (name) {
+            if (name && !names.has(name)) {
                 fetch(`/api/names/${name}`, { method: 'POST' });
-                names.push(name);
+                names.add(name);
             }
             $('#addNameModal').modal('hide');
             (<HTMLInputElement>e.target).form!.reset();
@@ -15,11 +15,11 @@ export function buildAddNameEventHandler(names: string[]) {
     });
 }
 
-export function buildDeleteNameEventHandler(names: string[]) {
+export function buildDeleteNameEventHandler(names: Set<string>) {
     document.getElementById('deleteNameButton')!.addEventListener('click', async () => {
         const formElement = document.querySelector('#deleteNameModalBody');
         formElement!.innerHTML = '';
-        names.sort().forEach(name => {
+        Array.from(names).sort().forEach(name => {
             formElement!.insertAdjacentHTML('beforeend',
                 `<div class="form-check">>
                     <input class="form-check-input" type="checkbox" value=""
@@ -42,7 +42,7 @@ export function buildDeleteNameEventHandler(names: string[]) {
                 }
             };
             for (const name of namesToDelete) {
-                names.splice(names.findIndex(n => n === name), 1);
+                names.delete(name);
             }
         });
 
