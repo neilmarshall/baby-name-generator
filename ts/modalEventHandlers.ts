@@ -34,12 +34,16 @@ export function buildDeleteNameEventHandler(names: string[]) {
         document.getElementById('deleteNameModalButton')!.addEventListener('click', async e => {
             e.preventDefault();
             $('#deleteNameModal').modal('hide');
+            let namesToDelete = []
             for (const name of names) {
                 if ($(`#deleteCheckBoxId-${name}`).prop('checked')) {
                     await fetch(`/api/names/${name}`, { method: 'DELETE' });
-                    names.splice(names.findIndex(n => n === name), 1);
+                    namesToDelete.push(name);
                 }
             };
+            for (const name of namesToDelete) {
+                names.splice(names.findIndex(n => n === name), 1);
+            }
         });
 
         $('#deleteNameModal').modal();
