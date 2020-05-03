@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "hash": "node scripts/generate_hash.js"
   },
@@ -31,6 +31,8 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "@types/bootstrap": "^4.3.2",
+    "@types/jquery": "^3.3.36",
     "node-fetch": "^2.6.0"
   },
   "engines": {

@@ -1,25 +1,26 @@
-export function buildAddNameEventHandler(names) {
-    document.getElementById('addNameButton').addEventListener('click', () => {
+export function buildAddNameEventHandler(names: Set<string>) {
+    document.getElementById('addNameButton')!.addEventListener('click', () => {
         $('#addNameModal').modal();
 
-        document.getElementById('addNameModalButton').addEventListener('click', e => {
+        document.getElementById('addNameModalButton')!.addEventListener('click', e => {
             e.preventDefault();
-            if (e.target.form.name.value) {
-                fetch(`/api/names/${e.target.form.name.value}`, { method: 'POST' });
-                names.push(e.target.form.name.value);
+            const name = (<HTMLInputElement>e.target).form!["nameToAdd"].value;
+            if (name && !names.has(name)) {
+                fetch(`/api/names/${name}`, { method: 'POST' });
+                names.add(name);
             }
             $('#addNameModal').modal('hide');
-            e.target.form.reset();
+            (<HTMLInputElement>e.target).form!.reset();
         });
     });
 }
 
-export function buildDeleteNameEventHandler(names) {
-    document.getElementById('deleteNameButton').addEventListener('click', async () => {
+export function buildDeleteNameEventHandler(names: Set<string>) {
+    document.getElementById('deleteNameButton')!.addEventListener('click', async () => {
         const formElement = document.querySelector('#deleteNameModalBody');
-        formElement.innerHTML = '';
-        names.sort().forEach(name => {
-            formElement.insertAdjacentHTML('beforeend',
+        formElement!.innerHTML = '';
+        Array.from(names).sort().forEach(name => {
+            formElement!.insertAdjacentHTML('beforeend',
                 `<div class="form-check">>
                     <input class="form-check-input" type="checkbox" value=""
                         id="deleteCheckBoxId-${name}">
@@ -30,15 +31,19 @@ export function buildDeleteNameEventHandler(names) {
             );
         });
 
-        document.getElementById('deleteNameModalButton').addEventListener('click', async e => {
+        document.getElementById('deleteNameModalButton')!.addEventListener('click', async e => {
             e.preventDefault();
             $('#deleteNameModal').modal('hide');
+            let namesToDelete = []
             for (const name of names) {
                 if ($(`#deleteCheckBoxId-${name}`).prop('checked')) {
                     await fetch(`/api/names/${name}`, { method: 'DELETE' });
-                    names.splice(names.findIndex(n => n === name), 1);
+                    namesToDelete.push(name);
                 }
             };
+            for (const name of namesToDelete) {
+                names.delete(name);
+            }
         });
 
         $('#deleteNameModal').modal();
@@ -46,14 +51,14 @@ export function buildDeleteNameEventHandler(names) {
 }
 
 export function buildChangePasswordEventHandler() {
-    document.getElementById('changePasswordButton').addEventListener('click', () => {
+    document.getElementById('changePasswordButton')!.addEventListener('click', () => {
         $('#changePasswordModal').modal();
 
-        document.getElementById('changePasswordModalButton').addEventListener('click', e => {
+        document.getElementById('changePasswordModalButton')!.addEventListener('click', e => {
             e.preventDefault();
 
-            const currentPassword = e.target.form.elements.currentPassword.value;
-            const newPassword = e.target.form.elements.newPassword.value;
+            const currentPassword = (<HTMLInputElement>e.target).form!["currentPassword"].value;
+            const newPassword = (<HTMLInputElement>e.target).form!["newPassword"].value;
 
             if (currentPassword && newPassword) {
                 fetch('/api/users', {
@@ -64,7 +69,7 @@ export function buildChangePasswordEventHandler() {
             }
 
             $('#changePasswordModal').modal('hide');
-            e.target.form.reset();
+            (<HTMLInputElement>e.target).form!.reset();
         });
     });
 
@@ -72,15 +77,15 @@ export function buildChangePasswordEventHandler() {
 
 export function buildAddUserEventHandler() {
     if (document.getElementById('addUserButton')) {
-        document.getElementById('addUserButton').addEventListener('click', () => {
+        document.getElementById('addUserButton')!.addEventListener('click', () => {
             $('#addUserModal').modal();
 
-            document.getElementById('addUserModalButton').addEventListener('click', e => {
+            document.getElementById('addUserModalButton')!.addEventListener('click', e => {
                 e.preventDefault();
 
-                const username = e.target.form.elements.username.value;
-                const password = e.target.form.elements.password.value;
-                const role = e.target.form.elements.roleRadios.value;
+                const username = (<HTMLInputElement>e.target).form!["username"].value;
+                const password = (<HTMLInputElement>e.target).form!["password"].value;
+                const role = (<HTMLInputElement>e.target).form!["roleRadios"].value;
 
                 if (username && password && role) {
                     fetch('/api/users', {
@@ -91,7 +96,7 @@ export function buildAddUserEventHandler() {
                 }
 
                 $('#addUserModal').modal('hide');
-                e.target.form.reset();
+                (<HTMLInputElement>e.target).form!.reset();
             });
         });
     }

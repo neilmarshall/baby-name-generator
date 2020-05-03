@@ -1,24 +1,29 @@
-import { buildAddNameEventHandler, buildDeleteNameEventHandler,
-         buildChangePasswordEventHandler, buildAddUserEventHandler } from './modalEventHandlers.js';
+import * as eventHandlers from './modalEventHandlers.js';
+
+interface NameElement {
+    name: string;
+    total: number;
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
 
     // define variables
-    const { names } = await fetch('/api/names')
-        .then(response => response.json());
-    const nameElement1A = document.getElementById('name1-A');
-    const nameElement2A = document.getElementById('name2-A');
-    const nameElement1B = document.getElementById('name1-B');
-    const nameElement2B = document.getElementById('name2-B');
+    const names: Set<string> = await fetch('/api/names')
+        .then(response => response.json())
+        .then(json => new Set(json.names));
+    const nameElement1A = document.getElementById('name1-A')!;
+    const nameElement2A = document.getElementById('name2-A')!;
+    const nameElement1B = document.getElementById('name1-B')!;
+    const nameElement2B = document.getElementById('name2-B')!;
 
 
     // define locally-scoped functions
-    const getRandomName = function(firstName) {
+    const getRandomName = function(firstName: string | undefined = undefined): string {
         if (firstName) {
             const secondName = getRandomName();
             return secondName !== firstName ? secondName : getRandomName(firstName);
         }
-        return names[Math.floor(Math.random() * names.length)];
+        return Array.from(names)[Math.floor(Math.random() * names.size)];
     }
 
     const resetNames = () => {
@@ -37,10 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const tableId1B = "results-table-1-B";
         const tableId2B = "results-table-2-B";
 
-        const table1A = document.getElementById(tableId1A);
-        const table2A = document.getElementById(tableId2A);
-        const table1B = document.getElementById(tableId1B);
-        const table2B = document.getElementById(tableId2B);
+        const table1A = document.getElementById(tableId1A)!;
+        const table2A = document.getElementById(tableId2A)!;
+        const table1B = document.getElementById(tableId1B)!;
+        const table2B = document.getElementById(tableId2B)!;
 
         const primaryUsername = table1A.getAttribute('data-user');
         const secondaryUsername = table2A.getAttribute('data-user');
@@ -51,8 +56,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             ? (await fetch(`/api/favouritenames/${secondaryUsername}`).then(response => response.json()))
             : null;
 
-        const buildResultsTable = async function(table, tableId, nameElements) {
-            document.querySelectorAll(`#${tableId} td`).forEach(e => e.parentNode.removeChild(e))
+        const buildResultsTable = async function(table: HTMLElement, tableId: string, nameElements: NameElement[]) {
+            document.querySelectorAll(`#${tableId} td`).forEach(e => e.parentNode!.removeChild(e))
             if (nameElements) {
                 nameElements.map(element => {
                     const signedTotal = element.total > 0 ? `+${element.total}` : element.total < 0 ? `${element.total}` : '-';
@@ -67,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         await buildResultsTable(table2B, tableId2B, secondaryNameElements);
     }
 
-    const logFavouriteName = async function(preferredName, unpreferredName) {
+    const logFavouriteName = async function(preferredName: HTMLElement, unpreferredName: HTMLElement) {
         preferredName.style.opacity = '0';
         unpreferredName.style.opacity = '0';
         window.setTimeout(() => {
@@ -76,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             resetNames();
         }, 1000);
 
-        const username = document.getElementById("results-table-1-A").getAttribute('data-user');
+        const username = document.getElementById("results-table-1-A")!.getAttribute('data-user');
         await fetch('/api/favouritenames', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -98,18 +103,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelectorAll('.otherUserSelectButton').forEach(element => {
         element.addEventListener('change', e => {
             document.querySelectorAll('.otherUserSelectButton').forEach(element => {
-                element.value = e.target.value;
+                (<HTMLInputElement>element).value = (<HTMLInputElement>e.target)!.value;
             });
-            document.getElementById("results-table-2-A").setAttribute('data-user', e.target.value);
-            document.getElementById("results-table-2-B").setAttribute('data-user', e.target.value);
+            document.getElementById("results-table-2-A")!.setAttribute('data-user', (<HTMLInputElement>e.target)!.value);
+            document.getElementById("results-table-2-B")!.setAttribute('data-user', (<HTMLInputElement>e.target)!.value);
             buildResultsTables();
         });
     });
 
-    buildAddNameEventHandler(names);
-    buildDeleteNameEventHandler(names);
-    buildChangePasswordEventHandler();
-    buildAddUserEventHandler();
+    eventHandlers.buildAddNameEventHandler(names);
+    eventHandlers.buildDeleteNameEventHandler(names);
+    eventHandlers.buildChangePasswordEventHandler();
+    eventHandlers.buildAddUserEventHandler();
 
 
     // initial page setup
