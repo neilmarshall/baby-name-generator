@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "hash": "node scripts/generate_hash.js"
+    "hash": "node scripts/generate_hash.js",
+    "build-ts": "tsc --build ts/tsconfig.json",
+    "postinstall": "npm run build-ts"
   },
   "repository": {
     "type": "git",
@@ -33,7 +35,8 @@
   "devDependencies": {
     "@types/bootstrap": "^4.3.2",
     "@types/jquery": "^3.3.36",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "typescript": "^3.8.3"
   },
   "engines": {
     "node": "12.5.0"
