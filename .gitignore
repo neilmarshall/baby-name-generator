@@ -1,4 +1,5 @@
 node_modules/
 static/js/
 tests/venv/
+tests/.env
 **/.*.swp

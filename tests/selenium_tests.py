@@ -1,6 +1,10 @@
+import os
+from dotenv import load_dotenv
 from selenium import webdriver
 
-driver = webdriver.Chrome(r"C:\Program Files (x86)\chromedriver_win32\chromedriver.exe")
+load_dotenv()
+
+driver = webdriver.Chrome(os.getenv("CHROME_DRIVER"))
 driver.implicitly_wait(10)
 driver.get("http://localhost:3000")
 
