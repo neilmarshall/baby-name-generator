@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     // define locally-scoped functions
-    const getRandomName = function(firstName: string | undefined = undefined): string {
+    const getRandomName = function(firstName?: string): string {
         if (firstName) {
             const secondName = getRandomName();
             return secondName !== firstName ? secondName : getRandomName(firstName);
@@ -49,10 +49,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const primaryUsername = table1A.getAttribute('data-user');
         const secondaryUsername = table2A.getAttribute('data-user');
-        const primaryNameElements = primaryUsername
+        const primaryNameElements: NameElement[] = primaryUsername
             ? (await fetch(`/api/favouritenames/${primaryUsername}`).then(response => response.json()))
             : null;
-        const secondaryNameElements = secondaryUsername
+        const secondaryNameElements: NameElement[] = secondaryUsername
             ? (await fetch(`/api/favouritenames/${secondaryUsername}`).then(response => response.json()))
             : null;
 
