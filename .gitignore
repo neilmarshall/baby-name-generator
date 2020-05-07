@@ -3,3 +3,4 @@ static/js/
 tests/venv/
 tests/.env
 **/.*.swp
+**/*.vim
