@@ -51,6 +51,15 @@ class TestMainPageShould(unittest.TestCase):
     def tearDownClass(cls):
         cls.driver.quit()
 
-    def test_print_data(self):
-        print(self.results_table_1_A)
-        print(self.results_table_2_A)
+    def test_button_1_on_click_alters_scores(self):
+        name1_button = self.driver.find_element_by_id("name1-A")
+        name1 = name1_button.text.split()[0]
+        name1_score = self.results_table_1_A.get(name1, 0)
+        name2_button = self.driver.find_element_by_id("name2-A")
+        name2 = name2_button.text.split()[0]
+        name2_score = self.results_table_1_A.get(name2, 0)
+        name1_button.click()
+        time.sleep(1)
+        new_results_table = self.convert_table_to_dict("results-table-1-A")
+        self.assertEqual(new_results_table.get(name1, 0), name1_score + 1)
+        self.assertEqual(new_results_table.get(name2, 0), name2_score - 1)
