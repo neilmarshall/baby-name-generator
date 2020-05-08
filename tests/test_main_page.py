@@ -42,8 +42,6 @@ class TestMainPageShould(unittest.TestCase):
             cls.driver.find_element_by_class_name("btn").click()
             time.sleep(0.5)
 
-            cls.results_table_1_A = cls.convert_table_to_dict("results-table-1-A")
-            cls.results_table_2_A = cls.convert_table_to_dict("results-table-2-A")
         except:
             cls.driver.quit()
 
@@ -52,12 +50,13 @@ class TestMainPageShould(unittest.TestCase):
         cls.driver.quit()
 
     def test_button_1_on_click_alters_scores(self):
+        old_results_table = self.convert_table_to_dict("results-table-1-A")
         name1_button = self.driver.find_element_by_id("name1-A")
         name1 = name1_button.text.split()[0]
-        name1_score = self.results_table_1_A.get(name1, 0)
+        name1_score = old_results_table.get(name1, 0)
         name2_button = self.driver.find_element_by_id("name2-A")
         name2 = name2_button.text.split()[0]
-        name2_score = self.results_table_1_A.get(name2, 0)
+        name2_score = old_results_table.get(name2, 0)
         name1_button.click()
         time.sleep(1)
         new_results_table = self.convert_table_to_dict("results-table-1-A")
