@@ -21,6 +21,44 @@ async function getNames() {
 }
 
 async function getFavouriteNames(username) {
+    /*
+    Node pipeline to aggregate scores directly in Mongo:
+    [
+      {
+        '$match': {
+          'username': 'Neil'
+        }
+      }, {
+        '$project': {
+          'scores': [
+            {
+              'name': '$preferredName', 
+              'score': 1
+            }, {
+              'name': '$unpreferredName', 
+              'score': -1
+            }
+          ]
+        }
+      }, {
+        '$unwind': {
+          'path': '$scores'
+        }
+      }, {
+        '$group': {
+          '_id': '$scores.name', 
+          'total': {
+            '$sum': '$scores.score'
+          }
+        }
+      }, {
+        '$sort': {
+          'total': -1, 
+          '_id': 1
+        }
+      }
+    ]
+    */
     const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
