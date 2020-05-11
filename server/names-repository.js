@@ -21,24 +21,88 @@ async function getNames() {
 }
 
 async function getFavouriteNames(username) {
+    /*
+    Node pipeline to aggregate scores directly in Mongo:
+    [
+      {
+        '$match': {
+          'username': 'Neil'
+        }
+      }, {
+        '$project': {
+          'scores': [
+            {
+              'name': '$preferredName', 
+              'score': 1
+            }, {
+              'name': '$unpreferredName', 
+              'score': -1
+            }
+          ]
+        }
+      }, {
+        '$unwind': {
+          'path': '$scores'
+        }
+      }, {
+        '$group': {
+          '_id': '$scores.name', 
+          'total': {
+            '$sum': '$scores.score'
+          }
+        }
+      }, {
+        '$sort': {
+          'total': -1, 
+          '_id': 1
+        }
+      }
+    ]
+    */
     const client = new MongoClient(config.URL, {useUnifiedTopology: true});
     try {
         await client.connect();
 
-        const response = await client.db()
+        const preferredNames = await client.db()
             .collection(favouriteNamesCollection)
             .aggregate([
                 { '$match': { 'username': username } },
-                { '$project': { 'scores': [ { 'name': '$preferredName', 'score': 1 }, { 'name': '$unpreferredName', 'score': -1 } ] } },
-                { '$unwind': { 'path': '$scores' } },
-                { '$group': { '_id': '$scores.name', 'total': { $sum: '$scores.score' } } },
-                { '$sort': { 'total': -1, '_id': 1 } },
-                { '$project': { '_id': 0, 'total': 1, 'name': '$_id' } }
+                { '$group': { '_id': '$preferredName', 'count': { $sum: 1 } } }
             ])
             .toArray();
-        console.log(response);
 
-        return response;
+        const unpreferredNames = await client.db()
+            .collection(favouriteNamesCollection)
+            .aggregate([
+                { '$match': { 'username': username } },
+                { '$group': { '_id': '$unpreferredName', 'count': { $sum: -1 } } }
+            ])
+            .toArray();
+
+        if (preferredNames || unpreferredNames) {
+            const nameCounts = {};
+            for (let [_, {_id, count}] of Object.entries(preferredNames)) {
+                nameCounts[_id] = count;
+            };
+            for (let [_, {_id, count}] of Object.entries(unpreferredNames)) {
+                if (nameCounts[_id]) {
+                    nameCounts[_id] += count;
+                } else {
+                    nameCounts[_id] = count;
+                }
+            };
+
+            const sortedNames = Object.keys(nameCounts)
+                .sort((n1, n2) =>
+                    nameCounts[n1] === nameCounts[n2]
+                        ? n1 < n2 ? -1 : 1
+                        : nameCounts[n1] > nameCounts[n2] ? -1 : 1
+                );
+
+            return sortedNames.map(name => { return {name, total: nameCounts[name]}; });
+        } else {
+            return null;
+        }
     } catch (err) {
         console.error(err);
     } finally {
