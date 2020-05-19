@@ -1,7 +1,9 @@
 import os
 import time
 import unittest
+from datetime import datetime
 from dotenv import load_dotenv
+from pymongo import MongoClient
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -9,11 +11,57 @@ from selenium.webdriver.support import expected_conditions as EC
 
 load_dotenv()
 CHROME_DRIVER = os.getenv("CHROME_DRIVER")
+CONNECTION_STRING = os.getenv("CONNECTION_STRING")
 URL = os.getenv("URL")
 BABYNAMES_USERNAME = os.getenv("BABYNAMES_USERNAME")
 BABYNAMES_PASSWORD = os.getenv("BABYNAMES_PASSWORD")
 
 class TestMainPageShould(unittest.TestCase):
+
+    @staticmethod
+    def populate_database():
+
+        client = MongoClient(CONNECTION_STRING)
+        db = client.babynames
+        db.names.drop()
+        db.names.insert_one({'names': ['Alaric', 'Benjamin', 'Cillian', 'Darcy', 'Emery']})
+        db.favouriteNames.drop()
+        db.favouriteNames.insert_many([
+            { "preferredName" : "Emery", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 29) },
+            { "preferredName" : "Emery", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 29) },
+            { "preferredName" : "Emery", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 29) },
+            { "preferredName" : "Emery", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 30) },
+            { "preferredName" : "Cillian", "unpreferredName" : "Benjamin", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 30) },
+            { "preferredName" : "Cillian", "unpreferredName" : "Benjamin", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 31) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 31) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 31) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 31) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 31) },
+            { "preferredName" : "Cillian", "unpreferredName" : "Emery", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 31) },
+            { "preferredName" : "Alaric", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 32) },
+            { "preferredName" : "Alaric", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 32) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Emery", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 32) },
+            { "preferredName" : "Cillian", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 32) },
+            { "preferredName" : "Cillian", "unpreferredName" : "Darcy", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 32) },
+            { "preferredName" : "Alaric", "unpreferredName" : "Cillian", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 32) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Alaric", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 32) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Cillian", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 33) },
+            { "preferredName" : "Darcy", "unpreferredName" : "Emery", "username" : "Neil", "date" : datetime(2020, 5, 19, 8, 36, 33) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Alaric", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 5) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Alaric", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 5) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Alaric", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 5) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Alaric", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 6) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Alaric", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 6) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Alaric", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 6) },
+            { "preferredName" : "Cillian", "unpreferredName" : "Darcy", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 7) },
+            { "preferredName" : "Darcy", "unpreferredName" : "Cillian", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 7) },
+            { "preferredName" : "Darcy", "unpreferredName" : "Cillian", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 7) },
+            { "preferredName" : "Darcy", "unpreferredName" : "Cillian", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 8) },
+            { "preferredName" : "Alaric", "unpreferredName" : "Cillian", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 8) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Emery", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 8) },
+            { "preferredName" : "Benjamin", "unpreferredName" : "Emery", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 8) },
+            { "preferredName" : "Alaric", "unpreferredName" : "Emery", "username" : "Sam", "date" : datetime(2020, 5, 19, 8, 48, 8) }
+        ])
 
     @classmethod
     def convert_table_to_dict(cls, table_id):
@@ -31,6 +79,8 @@ class TestMainPageShould(unittest.TestCase):
     def setUpClass(cls):
 
         cls.driver = webdriver.Chrome(CHROME_DRIVER)
+
+        cls.populate_database()
 
         try:
             cls.driver.implicitly_wait(10)
