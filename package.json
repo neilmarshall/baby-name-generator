@@ -35,7 +35,7 @@
   "devDependencies": {
     "@types/bootstrap": "^4.3.2",
     "@types/jquery": "^3.3.36",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "typescript": "^3.8.3"
   },
   "engines": {
